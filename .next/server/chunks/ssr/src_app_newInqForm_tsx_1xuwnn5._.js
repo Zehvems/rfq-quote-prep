@@ -1,0 +1,3 @@
+module.exports=[93675,a=>{"use strict";var b=a.i(87924),c=a.i(72131);a.s(["default",0,function(){let[a,d]=(0,c.useState)(null),[e,f]=(0,c.useState)("");return(0,b.jsxs)("form",{onSubmit:async b=>{b.preventDefault(),console.log("Submitting new inquiry:",{company:a,rawText:e})},children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("label",{htmlFor:"company",children:"Firma:"}),(0,b.jsx)("input",{id:"company",type:"text",value:a??"",onChange:a=>d(a.target.value||null)})]}),(0,b.jsxs)("div",{children:[(0,b.jsx)("label",{htmlFor:"rawText",children:"Tekst zapytania:"}),(0,b.jsx)("textarea",{id:"rawText",value:e,onChange:a=>f(a.target.value)})]}),(0,b.jsx)("button",{type:"submit",children:"Dodaj zapytanie"})]})}])}];
+
+//# sourceMappingURL=src_app_newInqForm_tsx_1xuwnn5._.js.map

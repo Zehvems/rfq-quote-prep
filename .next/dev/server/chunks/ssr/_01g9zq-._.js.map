@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///E:/dev/active/rfq-quote-prep/node_modules/next/src/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = (\n  require('../../module.compiled') as typeof import('../../module.compiled')\n).vendored['react-rsc']!.ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":"AAAAA,OAAOC,OAAO,GACZC,QAAQ,4HACRC,QAAQ,CAAC,YAAY,CAAEC,kBAAkB","ignoreList":[0]}},
+    {"offset": {"line": 9, "column": 0}, "map": {"version":3,"sources":["file:///E:/dev/active/rfq-quote-prep/src/app/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\nimport type { ReactNode } from \"react\";\n\nimport \"./globals.css\";\n\nexport const metadata: Metadata = {\n  title: \"RFQ Quote Prep\",\n  description: \"Przygotowanie ofert na zapytania RFQ.\",\n};\n\ntype RootLayoutProps = Readonly<{\n  children: ReactNode;\n}>;\n\nexport default function RootLayout({ children }: RootLayoutProps) {\n  return (\n    <html lang=\"pl\">\n      <body>{children}</body>\n    </html>\n  );\n}\n"],"names":["metadata","title","description","RootLayout","children","lang"],"mappings":";;;;;;;;;AAKO,MAAMA,WAAqB;IAChCC,OAAO;IACPC,aAAa;AACf;AAMe,SAASC,WAAW,EAAEC,QAAQ,EAAmB;IAC9D,qBACE,8OAAC;QAAKC,MAAK;kBACT,cAAA,8OAAC;sBAAMD;;;;;;;;;;;AAGb"}}]
+}

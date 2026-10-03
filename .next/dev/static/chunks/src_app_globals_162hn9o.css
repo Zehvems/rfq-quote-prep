@@ -1,0 +1,29 @@
+/* [project]/src/app/globals.css [app-client] (css) */
+*, :before, :after {
+  box-sizing: border-box;
+}
+
+html {
+  --lightningcss-light: initial;
+  --lightningcss-dark: ;
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  color: #111;
+  background: #fff;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+/*# sourceMappingURL=src_app_globals_162hn9o.css.map*/

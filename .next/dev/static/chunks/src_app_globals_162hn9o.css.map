@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///E:/dev/active/rfq-quote-prep/src/app/globals.css"],"sourcesContent":["*,\n*::before,\n*::after {\n  box-sizing: border-box;\n}\n\nhtml {\n  color-scheme: light;\n  font-family: Arial, Helvetica, sans-serif;\n  line-height: 1.5;\n}\n\nbody {\n  min-height: 100vh;\n  margin: 0;\n  color: #111;\n  background: #fff;\n}\n\nbutton,\ninput,\nselect,\ntextarea {\n  font: inherit;\n}\n\na {\n  color: inherit;\n}\n"],"names":[],"mappings":"AAAA;;;;AAMA;;;;;;;;AAMA;;;;;;;AAOA;;;;AAOA"}}]
+}
