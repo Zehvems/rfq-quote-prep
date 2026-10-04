@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { formStyles } from './uiStyles';
 
 export default function NewInqForm() {
   const router = useRouter();
@@ -39,29 +40,36 @@ export default function NewInqForm() {
   return (
     <form
       onSubmit={handleSubmit}
+      className={formStyles.form}
     >
       <div>
-        <label htmlFor="company">Firma:</label>
+        <label htmlFor="company" className={formStyles.label}>Firma <span className={formStyles.optional}>(opcjonalnie)</span></label>
         <input
           id="company"
           type="text"
+          placeholder="Nazwa firmy"
+          className={formStyles.input}
           value={company ?? ''}
           onChange={(e) => setCompany(e.target.value || null)}
         />
       </div>
       <div>
-        <label htmlFor="rawText">Tekst zapytania:</label>
+        <label htmlFor="rawText" className={formStyles.label}>Treść zapytania</label>
         <textarea
           id="rawText"
+          rows={7}
+          placeholder="Produkt, ilość, specyfikacja, termin i miejsce dostawy…"
+          className={formStyles.textarea}
           value={rawText}
           onChange={(e) => setRawText(e.target.value)}
           required
         />
       </div>
-      <button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting} className={formStyles.button}>
+        {isSubmitting && <span aria-hidden="true" className={formStyles.spinner} />}
         {isSubmitting ? 'Zapisywanie...' : 'Dodaj zapytanie'}
       </button>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert" className={formStyles.error}>{error}</p>}
     </form>
   );
 }
