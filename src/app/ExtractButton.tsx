@@ -1,6 +1,7 @@
 'use client';
+import { checkRFQCompleteness } from '../lib/rfq/completeness';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import type { RFQData } from '../lib/rfq/schema';
 import { extractStyles } from './uiStyles';
 
@@ -40,7 +41,7 @@ export default function ExtractButton({ rawText }: ExtractButtonProps) {
     setIsLoading(false);
   }
   }
-
+  const completeness = data ? checkRFQCompleteness(data) : null;
   return (
     <>
       <button type="button" onClick={handleExtract} disabled={isLoading} aria-busy={isLoading} className={extractStyles.button}>
@@ -50,18 +51,35 @@ export default function ExtractButton({ rawText }: ExtractButtonProps) {
       {error && <p role="alert" className={extractStyles.error}>{error}</p>}
       {data && (
         <dl aria-label="Wyodrębnione dane" className={extractStyles.fields}>
-          <div className={extractStyles.field}>
-            <dt className={extractStyles.label}>Typ produktu</dt>
-            <dd className={extractStyles.value}>{data.productType ?? 'Brak danych'}</dd>
-          </div>
-          <div className={extractStyles.field}>
-            <dt className={extractStyles.label}>Ilość</dt>
-            <dd className={extractStyles.value}>{data.quantity ?? 'Brak danych'}</dd>
-          </div>
-          <div className={extractStyles.specificationField}>
-            <dt className={extractStyles.label}>Specyfikacja</dt>
-            <dd className={extractStyles.specificationValue}>{data.specification ?? 'Brak danych'}</dd>
-          </div>
+                  {data.items.map((item, index) => (
+                    <Fragment key={index}>
+                      <div className={extractStyles.field}>
+                        <dt className={extractStyles.label}>Typ produktu</dt>
+                        <dd className={extractStyles.value}>{item.productType ?? 'Brak danych'}</dd>
+                      </div>
+                      <div className={extractStyles.field}>
+                        <dt className={extractStyles.label}>Ilość</dt>
+                        <dd className={extractStyles.value}>{item.quantity ?? 'Brak danych'}</dd>
+                      </div>
+                      <div className={extractStyles.specificationField}>
+                        <dt className={extractStyles.label}>Specyfikacja</dt>
+                        <dd className={extractStyles.specificationValue}>{item.specification ?? 'Brak danych'}</dd>
+                      </div>
+                    </Fragment>
+                  ))}
+          {completeness && (
+            <div className={extractStyles.field}>
+              <dt className={extractStyles.label}>Status</dt>
+              <dd className={extractStyles.value}>
+                {completeness.status}
+                <ul className={extractStyles.value}>
+                  {completeness.missingFields.map((field) => (
+                    <li key={field.path}>{field.message}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          )}
           <div className={extractStyles.field}>
             <dt className={extractStyles.label}>Termin dostawy</dt>
             <dd className={extractStyles.value}>{data.deadline ?? 'Brak danych'}</dd>
