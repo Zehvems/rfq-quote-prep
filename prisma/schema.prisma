@@ -8,10 +8,11 @@ datasource db {
 }
 
 model Inquiry {
-  id        String   @id @default(cuid())
-  company   String?
-  source    String   @default("MANUAL")
-  rawText   String
-  status    String   @default("RECEIVED")
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  company    String?
+  source     String   @default("MANUAL")
+  rawText    String
+  reviewData Json?
+  status     String   @default("RECEIVED")
+  createdAt  DateTime @default(now())
 }
