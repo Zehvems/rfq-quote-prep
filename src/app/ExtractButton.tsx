@@ -292,11 +292,14 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
                       onChange={(event) => {
                         const value = event.target.value;
                         const quantity = value === '' ? null : Number(value);
-                        updateItem(
-                          index,
-                          'quantity',
-                          quantity !== null && Number.isFinite(quantity) ? quantity : null,
-                        );
+                        if (
+                          value !== `` &&
+                          (!Number.isFinite(quantity) || quantity < 1 || !Number.isInteger(quantity))
+                        ) {
+                          return;
+                        }
+
+                        updateItem(index, 'quantity', quantity);
                       }}
                     />
                     <FieldError
