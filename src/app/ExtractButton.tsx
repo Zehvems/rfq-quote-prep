@@ -12,13 +12,22 @@ import AppIcon from './AppIcon';
 type ExtractButtonProps = {
   inquiryId: string;
   rawText: string;
+  initialData: unknown;
+  status: string;
 };
 
 type RFQItem = RFQData['items'][number];
 
-export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps) {
+export default function ExtractButton({
+  inquiryId,
+  rawText,
+  initialData,
+  status: initialStatus,
+}: ExtractButtonProps) {
   const id = useId();
-  const [data, setData] = useState<RFQData | null>(null);
+  const initial = rfqSchema.safeParse(initialData);
+  const [data, setData] = useState<RFQData | null>(initial.success ? initial.data : null);
+  const [status, setStatus] = useState(initialStatus);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<ReviewSaveState>({
@@ -26,9 +35,48 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
   });
   const savingRef = useRef(false);
   const isSaving = saveState.status === 'saving';
+  const [decisionState, setDecisionState] = useState<{
+    pending: boolean;
+    error: string | null;
+  }>({ pending: false, error: null });
+
+  async function handleDecision(action: 'APPROVE' | 'REQUEST_INFO') {
+    if (!data || decisionState.pending || savingRef.current || isLoading) return;
+    setDecisionState({ pending: true, error: null });
+    try {
+      const response = await fetch(`/api/inquiries/${encodeURIComponent(inquiryId)}/decision`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, data }),
+      });
+      const result: unknown = await response.json().catch(() => null);
+      if (
+        !response.ok ||
+        !result ||
+        typeof result !== 'object' ||
+        !('ok' in result) ||
+        result.ok !== true ||
+        !('data' in result)
+      ) {
+        const message =
+          result && typeof result === 'object' && 'error' in result && typeof result.error === 'string'
+            ? result.error
+            : 'Nie udało się zapisać decyzji.';
+        setDecisionState({ pending: false, error: message });
+        return;
+      }
+      const saved = result.data as { status?: unknown; reviewData?: unknown };
+      if (typeof saved.status !== 'string') throw new Error('Nieprawidłowe potwierdzenie decyzji.');
+      setStatus(saved.status);
+      const savedData = rfqSchema.safeParse(saved.reviewData);
+      if (savedData.success) setData(savedData.data);
+      setDecisionState({ pending: false, error: null });
+    } catch (cause) {
+      setDecisionState({ pending: false, error: cause instanceof Error ? cause.message : 'Błąd połączenia.' });
+    }
+  }
 
   async function handleSaveReview() {
-    if (!data || savingRef.current || isLoading) return;
+    if (!data || savingRef.current || decisionState.pending || isLoading) return;
     savingRef.current = true;
     setSaveState({ status: 'saving' });
     try {
@@ -76,24 +124,30 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
   }
 
   async function handleExtract() {
-    if (savingRef.current || isLoading) return;
+    if (savingRef.current || decisionState.pending || isLoading) return;
     setSaveState({ status: 'idle' });
     setIsLoading(true);
     setError(null);
-    setData(null);
     try {
       const response = await fetch('/api/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawText }),
+        body: JSON.stringify({ rawText, inquiryId }),
       });
 
       if (!response.ok) {
         setError('Wystąpił błąd podczas wyodrębniania danych.');
         return;
       }
-      const extracted = await response.json();
-      setData(extracted.data);
+      const extracted: unknown = await response.json();
+      if (!extracted || typeof extracted !== 'object' || !('ok' in extracted) || extracted.ok !== true || !('data' in extracted)) {
+        setError('Nie otrzymano poprawnego wyniku ekstrakcji.');
+        return;
+      }
+      const parsed = rfqSchema.safeParse(extracted.data);
+      if (!parsed.success) { setError('Wynik ekstrakcji nie jest zgodny ze schematem.'); return; }
+      setData((current) => current ?? parsed.data);
+      setStatus((current) => current === 'RECEIVED' ? 'EXTRACTED' : current);
     } catch {
       setError('Nie udało się odczytać danych. Spróbuj ponownie.');
     } finally {
@@ -101,7 +155,7 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
     }
   }
   function updateItem<K extends keyof RFQItem>(index: number, field: K, value: RFQItem[K]) {
-    if (savingRef.current) return;
+    if (savingRef.current || decisionState.pending) return;
     setSaveState({ status: 'idle' });
     setData((previous) =>
       previous
@@ -116,7 +170,7 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
   }
 
   function updateDelivery(field: 'deadline' | 'deliveryLocation', value: string) {
-    if (savingRef.current) return;
+    if (savingRef.current || decisionState.pending) return;
     setSaveState({ status: 'idle' });
     setData((previous) =>
       previous ? { ...previous, [field]: value === '' ? null : value } : previous,
@@ -154,7 +208,7 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
         <button
           type="button"
           onClick={handleExtract}
-          disabled={isLoading || isSaving}
+          disabled={isLoading || isSaving || decisionState.pending}
           aria-busy={isLoading}
           aria-label={
             isLoading ? 'Wyodrębnianie danych' : data ? 'Wyodrębnij ponownie' : 'Wyodrębnij dane'
@@ -168,9 +222,10 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
           </span>
         </button>
       </div>
+      <p className={extractStyles.hint}>Status zapytania: <strong>{status}</strong></p>
       {data && (
         <p className={extractStyles.repeatHint}>
-          Ponowna ekstrakcja zastąpi bieżące poprawki w formularzu.
+          Ponowna ekstrakcja odświeży wynik AI. Zapisany szkic użytkownika pozostaje w formularzu.
         </p>
       )}
       {error && (
@@ -239,7 +294,7 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
           {data.items.map((item, index) => {
             const path = `items[${index}]`;
             return (
-              <fieldset key={index} disabled={isSaving} className={extractStyles.itemCard}>
+              <fieldset key={index} disabled={isSaving || decisionState.pending} className={extractStyles.itemCard}>
                 <legend className={extractStyles.legend}>Pozycja {index + 1}</legend>
                 <div className={extractStyles.itemGrid}>
                   <div>
@@ -344,7 +399,7 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
             );
           })}
 
-          <fieldset disabled={isSaving} className={extractStyles.itemCard}>
+          <fieldset disabled={isSaving || decisionState.pending} className={extractStyles.itemCard}>
             <legend className={extractStyles.legend}>Wspólne warunki dostawy</legend>
             <div className={extractStyles.deliveryGrid}>
               <div>
@@ -392,7 +447,15 @@ export default function ExtractButton({ inquiryId, rawText }: ExtractButtonProps
           </fieldset>
 
           <ReviewSavePanel state={saveState} onSave={handleSaveReview} />
-          <ReviewDecisionPanel isComplete={!needsInfo} />
+          <ReviewDecisionPanel
+            isComplete={!needsInfo}
+            onApprove={() => handleDecision('APPROVE')}
+            onRequestInfo={() => handleDecision('REQUEST_INFO')}
+            isPending={decisionState.pending}
+          />
+          {decisionState.error && (
+            <p role="alert" className={extractStyles.error}>{decisionState.error}</p>
+          )}
         </section>
       )}
     </>

@@ -62,14 +62,11 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-
-    const inquires = await prisma.inquiry.findMany({
-        orderBy: {
-            createdAt: 'desc',
-        },
-    });
-
-
-    return NextResponse.json(inquires, { status: 200 });
-
+  try {
+    const inquiries = await prisma.inquiry.findMany({ orderBy: { createdAt: 'desc' } });
+    return NextResponse.json(inquiries, { status: 200 });
+  } catch (error) {
+    console.error('Nie udało się pobrać zapytań:', error);
+    return NextResponse.json({ ok: false, error: 'Nie udało się pobrać zapytań.' }, { status: 500 });
+  }
 }

@@ -17,7 +17,9 @@ export default async function HomePage() {
     id: string;
     company: string | null;
     rawText: string;
+    extractionData: Record<string, unknown> | null;
     reviewData: Record<string, unknown> | null;
+    status: string;
   }[] = await response.json();
 
   return (
@@ -135,7 +137,8 @@ export default async function HomePage() {
                   </summary>
                   <p className={pageStyles.inquiryText}>{inquiry.rawText}</p>
                 </details>
-                <ExtractButton inquiryId={inquiry.id} rawText={inquiry.rawText} />
+                <ExtractButton inquiryId={inquiry.id} rawText={inquiry.rawText}
+                  initialData={inquiry.reviewData ?? inquiry.extractionData} status={inquiry.status} />
               </li>
             ))}
           </ul>

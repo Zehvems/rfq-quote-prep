@@ -12,6 +12,7 @@ model Inquiry {
   company    String?
   source     String   @default("MANUAL")
   rawText    String
+  extractionData Json?
   reviewData Json?
   status     String   @default("RECEIVED")
   createdAt  DateTime @default(now())
