@@ -40,6 +40,7 @@ export default async function HomePage() {
       </nav>
       <header className={pageStyles.header}>
         <div>
+          <p className={pageStyles.eyebrow}>RFQ / QUOTE PREP LAB</p>
           <h1 className={pageStyles.title}>Przygotowanie zapytań</h1>
           <p className={pageStyles.description}>
             Zbierz wymagania klienta i sprawdź dane przed wyceną.
@@ -60,6 +61,7 @@ export default async function HomePage() {
           </li>
         </ol>
       </header>
+
       <div className={pageStyles.layout}>
         <section className={pageStyles.formPanel} aria-labelledby="new-inquiry-heading">
           <div className={pageStyles.formIntro}>
@@ -137,8 +139,12 @@ export default async function HomePage() {
                   </summary>
                   <p className={pageStyles.inquiryText}>{inquiry.rawText}</p>
                 </details>
-                <ExtractButton inquiryId={inquiry.id} rawText={inquiry.rawText}
-                  initialData={inquiry.reviewData ?? inquiry.extractionData} status={inquiry.status} />
+                <ExtractButton
+                  inquiryId={inquiry.id}
+                  rawText={inquiry.rawText}
+                  initialData={inquiry.reviewData ?? inquiry.extractionData}
+                  status={inquiry.status}
+                />
               </li>
             ))}
           </ul>
