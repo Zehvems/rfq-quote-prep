@@ -24,14 +24,14 @@ export default function ReviewSavePanel({
 
   return (
     <section aria-label="Zapis poprawek" className={reviewSaveStyles.panel}>
-      <div className={reviewSaveStyles.header}>
-        <div className={reviewSaveStyles.description}>
+      <div className={reviewSaveStyles.description}>
+        <div className={reviewSaveStyles.headingRow}>
           <h4 className={reviewSaveStyles.heading}>Zapisz postęp przeglądu</h4>
-          <p id={hintId} className={reviewSaveStyles.hint}>
-            Możesz zapisać także niekompletny szkic. Zapis nie oznacza zatwierdzenia zapytania.
-          </p>
+          <span className={reviewSaveStyles.badge}>Szkic</span>
         </div>
-        <span className={reviewSaveStyles.badge}>Szkic</span>
+        <p id={hintId} className={reviewSaveStyles.hint}>
+          Możesz zapisać także niekompletny szkic. Zapis nie oznacza zatwierdzenia zapytania.
+        </p>
       </div>
 
       <div className={reviewSaveStyles.actions}>
@@ -53,16 +53,18 @@ export default function ReviewSavePanel({
               : 'Zapis jest jeszcze niedostępny. Poprawki pozostają tylko w tej sesji.'}
           </p>
         )}
+        <div role="status" aria-live="polite" aria-atomic="true">
+          {isSaving && <p className={reviewSaveStyles.note}>Trwa zapisywanie poprawek.</p>}
+          {state.status === 'success' && (
+            <p className={reviewSaveStyles.success}>Poprawki zostały zapisane.</p>
+          )}
+        </div>
       </div>
 
-      <div role="status" aria-live="polite" aria-atomic="true">
-        {isSaving && <p className={reviewSaveStyles.note}>Trwa zapisywanie poprawek.</p>}
-        {state.status === 'success' && (
-          <p className={reviewSaveStyles.success}>Poprawki zostały zapisane.</p>
-        )}
-      </div>
       {state.status === 'error' && (
-        <p role="alert" className={reviewSaveStyles.error}>{state.message}</p>
+        <p role="alert" className={`${reviewSaveStyles.error} sm:basis-full`}>
+          {state.message}
+        </p>
       )}
     </section>
   );

@@ -9,17 +9,23 @@
 
   html {
     color-scheme: light;
-    font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue",
+      Roboto, sans-serif;
     line-height: 1.5;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {
     min-height: 100vh;
     margin: 0;
-    color: #172a30;
-    background:
-      radial-gradient(ellipse at 12% 0%, rgba(204, 222, 214, 0.42), transparent 38rem),
-      #e9eeeb;
+    color: #0f172a;
+    background: #f8fafc;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -36,8 +42,8 @@
   }
 
   ::selection {
-    color: #102c2c;
-    background: #c9ded6;
+    color: #ffffff;
+    background: #0f172a;
   }
 
   button:not(:disabled),
@@ -50,8 +56,8 @@
   }
 
   a:focus-visible {
-    outline: 2px solid #0f766e;
-    outline-offset: 5px;
+    outline: 2px solid #1d4ed8;
+    outline-offset: 4px;
     border-radius: 4px;
   }
 }

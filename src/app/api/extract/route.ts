@@ -3,6 +3,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
 import { Prisma } from "../../../../generated/prisma/client";
 
+export const maxDuration = 30;
+
+const MAX_RAW_TEXT_LENGTH = 8000;
+
 export async function POST(req: Request) {
   let body;
   try {
@@ -14,6 +18,9 @@ export async function POST(req: Request) {
   const inquiryId = body && typeof body === 'object' && 'inquiryId' in body ? body.inquiryId : undefined;
   if (typeof rawText !== "string" || !rawText.trim()) {
     return NextResponse.json({ ok: false, error: "Brak tekstu zapytania." }, { status: 400 });
+  }
+  if (rawText.length > MAX_RAW_TEXT_LENGTH) {
+    return NextResponse.json({ ok: false, error: "Tekst zapytania jest za długi (maks. 8000 znaków)." }, { status: 413 });
   }
   try {
     const data = await extractRFQ(rawText);

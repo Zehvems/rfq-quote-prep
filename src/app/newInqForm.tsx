@@ -1,7 +1,10 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { completeRFQ, incompleteRFQ } from '../lib/rfq/samples';
 import { formStyles } from './uiStyles';
+
+const MAX_LENGTH = 8000;
 
 export default function NewInqForm() {
   const router = useRouter();
@@ -38,12 +41,13 @@ export default function NewInqForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={formStyles.form}
-    >
+    <form onSubmit={handleSubmit} className={formStyles.form}>
       <div>
-        <label htmlFor="company" className={formStyles.label}>Firma <span className={formStyles.optional}>(opcjonalnie)</span></label>
+        <div className={formStyles.labelRow}>
+          <label htmlFor="company" className={formStyles.label}>
+            Firma <span className={formStyles.optional}>(opcjonalnie)</span>
+          </label>
+        </div>
         <input
           id="company"
           type="text"
@@ -54,10 +58,35 @@ export default function NewInqForm() {
         />
       </div>
       <div>
-        <label htmlFor="rawText" className={formStyles.label}>Treść zapytania</label>
+        <div className={formStyles.labelRow}>
+          <label htmlFor="rawText" className={formStyles.label}>
+            Treść zapytania
+          </label>
+          <span className={formStyles.counter} aria-hidden="true">
+            {rawText.length}/{MAX_LENGTH}
+          </span>
+        </div>
+        <div className={formStyles.sampleRow}>
+          <span>Przykład:</span>
+          <button
+            type="button"
+            className={formStyles.sampleButton}
+            onClick={() => setRawText(completeRFQ.trim())}
+          >
+            kompletne
+          </button>
+          <button
+            type="button"
+            className={formStyles.sampleButton}
+            onClick={() => setRawText(incompleteRFQ.trim())}
+          >
+            z brakami
+          </button>
+        </div>
         <textarea
           id="rawText"
           rows={7}
+          maxLength={MAX_LENGTH}
           placeholder="Produkt, ilość, specyfikacja, termin i miejsce dostawy…"
           className={formStyles.textarea}
           value={rawText}
@@ -67,7 +96,7 @@ export default function NewInqForm() {
       </div>
       <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting} className={formStyles.button}>
         {isSubmitting && <span aria-hidden="true" className={formStyles.spinner} />}
-        {isSubmitting ? 'Zapisywanie...' : 'Dodaj zapytanie'}
+        {isSubmitting ? 'Zapisywanie…' : 'Dodaj zapytanie'}
       </button>
       {error && <p role="alert" className={formStyles.error}>{error}</p>}
     </form>

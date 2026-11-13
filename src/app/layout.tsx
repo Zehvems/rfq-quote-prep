@@ -15,7 +15,7 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pl">
-      <body>{children}</body>
+      <body className="bg-[#F8FAFC] text-slate-900 antialiased selection:bg-slate-900 selection:text-white">{children}</body>
     </html>
   );
 }

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { prisma } from "../../../lib/prisma";
 
+const MAX_RAW_TEXT_LENGTH = 8000;
+
 export async function POST(request: Request) {
   try {
     const body: unknown = await request.json();
@@ -22,6 +24,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Pole rawText jest wymagane." },
         { status: 400 },
+      );
+    }
+
+    if (rawText.length > MAX_RAW_TEXT_LENGTH) {
+      return NextResponse.json(
+        { error: "Treść zapytania jest za długa (maks. 8000 znaków)." },
+        { status: 413 },
       );
     }
 

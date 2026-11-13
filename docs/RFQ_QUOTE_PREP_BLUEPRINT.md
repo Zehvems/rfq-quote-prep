@@ -1,5 +1,18 @@
 # RFQ Intake & Quote Prep Lab — Blueprint
 
+> [!NOTE]
+> **Status dokumentu:** Jest to pierwotny dokument koncepcyjny i plan warsztatowy (*Integration Lab #2*).
+> Aktualny stan techniczny, zrealizowana architektura oraz tabela endpointów są opisane w [`docs/ARCHITECTURE.md`](ARCHITECTURE.md).
+> 
+> **Co zrealizowano w kodzie:**
+> - Inbound RFQ (zapis do bazy Neon),
+> - Ekstrakcja strukturyzowana OpenAI Responses API (`gpt-6-luna`) ze schematem Zod (`rfqSchema`),
+> - Silnik sprawdzania kompletności pól (`checkRFQCompleteness`),
+> - Trzyetapowy panel Human Review (podgląd oryginału, edycja na żywo, zapis szkicu poprawek w `reviewData`),
+> - Bramka decyzyjna (zatwierdzenie `APPROVED` lub oznaczenie `NEEDS_INFO` z walidacją reguł biznesowych po stronie serwera).
+> 
+> *Elementy z blueprintu świadomie odłożone w MVP (zgodnie z sekcją 8): obsługa plików PDF, integracja z zewnętrznym silnikiem n8n/webhooków, autoryzacja.*
+
 ## 1. Cel projektu
 
 Zbudować mock-client MVP, które symuluje realny proces obsługi technicznego zapytania ofertowego:
